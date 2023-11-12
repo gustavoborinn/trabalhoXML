@@ -1,6 +1,6 @@
 /*+-------------------------------------------------------------+
  | UNIFAL – Universidade Federal de Alfenas.                    |
- | BACHARELADO EM CIENCIA DA COMPUTACAO - Turma - 2023          |
+ | BACHARELADO EM CIENCIA DA COMPUTACAO - Turma.: 2023          |
  | Trabalho..: Validacao de arquivos XML                        |
  | Disciplina: Algoritmos e Estrutura de Dados II – Prática     |
  | Professor.: Fellipe Rey                                      |
