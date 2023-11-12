@@ -2,7 +2,7 @@
  | UNIFAL – Universidade Federal de Alfenas.                    |
  | BACHARELADO EM CIENCIA DA COMPUTACAO.                        |
  | Trabalho..: Validacao de arquivos XML                        |
- | Disciplina: Algoritmos e Estrutura de Dados II – Pratica     |
+ | Disciplina: Algoritmos e Estrutura de Dados II – Prática     |
  | Professor.: Fellipe Rey                                      |
  | Aluno(s)..: Gustavo Benfica Paulino                          |
  | Gustavo Borin Nascimento                                     |
