@@ -15,119 +15,111 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct no{
-    char info;
-    struct no *prox;
-}node;
+typedef struct no {
+    char info[100];
+    struct no* prox;
+} node;
 
-void inserePilha(node **topo, node *novo_no){
+void inserePilha(node** topo, node* novo_no) {
     novo_no->prox = *topo;
     *topo = novo_no;
 }
 
-node *removePilha(node **topo){
-    node *remove = NULL;
-    if(*topo != NULL){
+node* removePilha(node** topo) {
+    node* remove = NULL;
+    if (*topo != NULL) {
         remove = *topo;
         *topo = (*topo)->prox;
     }
     return remove;
 }
 
-void mostraPilha(node *topo){
-    if(topo == NULL){
+void mostraPilha(node* topo) {
+    if (topo == NULL) {
         printf("Pilha vazia\n");
-    }else{
-        while(topo != NULL){
-            printf("%c   ", topo->info);
+    } else {
+        while (topo != NULL) {
+            printf("%s   ", topo->info);
             topo = topo->prox;
         }
     }
 }
 
-int comparaTags(char tag1[100], char tag2[100]){ // deve receber as tags sem "<", ">" e "/"
-    for (int i = 0; i < 100; i++){
-        if(tag1[i] != tag2[i]){
-            return 0; //False (0) se achar um diferente
+int comparaTags(char tag1[100], char tag2[100]) { //deve receber as tags sem "<", ">" e "/"
+    for (int i = 0; tag1[i] != '\0' && tag2[i] != '\0'; i++) {
+        if (tag1[i] != tag2[i]) {
+            return 0; // caso encontre um caractere diferente
         }
     }
-    return 1; //True (1) se não achar nenhum caractere diferente
+    return 1; //caso as tags sejam iguais
 }
 
-void percorreArquivo(FILE *arquivo){
-    char linha[100], tag1[100], tag2[100];
-    int j = 0;
+int percorreArquivo(FILE* arquivo, node** topo) {
+    char linha[100], tagAbre[100], tagFecha[100];
+    int j = 0, contaLinha = 0;
 
-    while(fgets(linha, 100, arquivo) != NULL){
+    while (fgets(linha, 100, arquivo) != NULL) {
+        contaLinha++;
         linha[strcspn(linha, "\n")] = '\0'; //função que acha o primeiro "\n" e substitui por '\0', indicando o final da string
-        for(int i = 0; linha[i] != '0'; i++){ //percorre os caracteres da linha até o final de cada
-            //se achar uma abertura de tag, coloca o conteudo em tag1
-            if(linha[i] == '<' && linha[i+1] != '/'){
-                while(linha[i] != '>'){
-                    tag1[j] = linha[i+1];
+
+        for (int i = 0; linha[i] != '\0'; i++) {
+            
+            //se achar uma abertura de tag empilha
+            if (linha[i] == '<' && linha[i + 1] != '/') {
+                i++; // Avança para o próximo caractere após '<'
+                while (linha[i] != '>' && j < 100) {
+                    tagAbre[j] = linha[i];
+                    i++;
+                    j++;
                 }
-                //inserePilha(tag1);
+                tagAbre[j] = '\0'; //determinar o final da string
                 j = 0;
-            //se achar um fechamento de tag, coloca o conteudo em tag2
-            }else if(linha[i] == '<' && linha[i+1] == '/'){ 
-                while(linha[i] != '>'){
-                    tag2[j] = linha[i+2];
+
+                node* novo_no = malloc(sizeof(node));
+                strcpy(novo_no->info, tagAbre); //copia o conteudo da string para o campo info do node
+                inserePilha(topo, novo_no);
+
+            //se achar um fechamento de tag, coloca o conteudo em tagFecha 
+            } else if (linha[i] == '<' && linha[i + 1] == '/') {
+                i = i + 2; // Avança para o próximo caractere após '</'
+                while (linha[i] != '>' && j < 100) {
+                    tagFecha[j] = linha[i];
+                    i++;
+                    j++;
                 }
+                tagFecha[j] = '\0'; //determinar o final da string
                 j = 0;
-                //x = comparaTags(tag1, tag2);
-                //se x == 1
-                //removePilha(tag1, tag2);              //pensamento
-                //se não = ERRO.
+
+                int x = comparaTags(tagFecha, (*topo)->info);
+                if (x == 1) {
+                    node *removido = removePilha(topo); //se TagFecha for igual ao topo, desempilha o topo
+                    free(removido); //libera o espaco de memoria q o nó ocupava
+                } else if (x == 0) {
+                    printf("ERRO na linha %d do arquivo XML\n", contaLinha);
+                    return 0; //caso ache um fechamento de tag errado
+                }
             }
-            printf("tag 1: %s tag2: %s", tag1, tag2);
         }
     }
-
+    return 1; //caso o arquivo esteja correto
 }
 
-int main(){
-    FILE *arquivo;
+int main() {
+    FILE* arquivo;
     arquivo = fopen("xml.txt", "r");
 
-    if(arquivo == NULL){
-        printf("arquivo não encontrado.\n");
+    if (arquivo == NULL) {
+        printf("Arquivo não encontrado.\n");
         return 1;
     }
-    percorreArquivo(arquivo);
+    node* topo = NULL;
+    int verificacao = percorreArquivo(arquivo, &topo);
 
-    node *topo = NULL;
-    
+    if (verificacao == 1) {
+        printf("Arquivo XML correto!\n");
+    }
 
     fclose(arquivo);
-
-
-    /*int resposta = -1;
-    
-    while(resposta != 0){
-        printf("\n 0-sair\n 1-inserir\n 2-remover\n 3-mostrar pilha\n --------------\n");
-        scanf(" %d", &resposta);
-        if(resposta == 1){
-            printf("digite o valor do novo no.\n");
-            char conteudo;
-            node *novo_no = (node*) malloc(sizeof(node));
-            scanf(" %c", &novo_no->info);
-            inserePilha(&topo, novo_no);
-        }else if(resposta == 2){
-            node *removido = removePilha(&topo);
-            if(removido != NULL){
-                printf("valor do no removido: %c", removido->info);
-            }else{
-                printf("Pilha Vazia, Impossivel remover.\n");
-            }
-            free(removido);
-        }else if(resposta == 3){
-            mostraPilha(topo);
-        }else if(resposta == 0){
-            printf("CLOSED!");
-        }else{
-            printf("resposta inválida.");
-        }
-    }*/
 
     return 0;
 }
