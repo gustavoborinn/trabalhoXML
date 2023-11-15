@@ -106,8 +106,9 @@ int percorreArquivo(FILE* arquivo, node** topo) {
 
 int main() {
     char nomeArquivo[100];
-    printf("\ndigite o nome do arquivo com a extensão. Exemplo: arquivo.xml: \n");
+    printf("\ndigite o nome do arquivo XML: \n");
     scanf("%s", nomeArquivo);
+    strcat(nomeArquivo, ".xml");
     FILE* arquivo;
     arquivo = fopen(nomeArquivo, "r");
 
