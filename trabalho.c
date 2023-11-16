@@ -34,24 +34,17 @@ node* removePilha(node** topo) {
     return remove;
 }
 
-void mostraPilha(node* topo) {
-    if (topo == NULL) {
-        printf("Pilha vazia\n");
-    } else {
-        while (topo != NULL) {
-            printf("%s   ", topo->info);
-            topo = topo->prox;
-        }
-    }
-}
-
-int comparaTags(char tag1[100], char tag2[100]) { //deve receber as tags sem "<", ">" e "/"
-    for (int i = 0; tag1[i] != '\0' && tag2[i] != '\0'; i++) {
+int comparaTags(char tag1[100], char tag2[100]) { // deve receber as tags sem "<", ">" e "/"
+    int i;
+    for (i = 0; tag1[i] != '\0' && tag2[i] != '\0'; i++) {
         if (tag1[i] != tag2[i]) {
             return 0; // caso encontre um caractere diferente
         }
     }
-    return 1; //caso as tags sejam iguais
+    if (tag1[i] != tag2[i]) {
+        return 0;
+    }
+    return 1; // caso as tags sejam iguais
 }
 
 int percorreArquivo(FILE* arquivo, node** topo) {
